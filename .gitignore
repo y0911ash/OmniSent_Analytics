@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.DS_Store
+notebooks/
+tear_sheet.png
+tear_sheet_ui.png
