@@ -26,14 +26,22 @@ lookback = st.sidebar.slider("Historical Data (Days)", min_value=90, max_value=3
 top_n = st.sidebar.slider("Long/Short Top N", min_value=1, max_value=5, value=2)
 transaction_cost = st.sidebar.number_input("Transaction Cost (%)", value=0.1) / 100.0
 
+@st.cache_data(show_spinner=False)
+def fetch_data_cached(tickers, start_date, end_date):
+    return load_aligned_dataset(tickers, start_date, end_date)
+
+@st.cache_resource(show_spinner=False)
+def load_analyzer():
+    return FinBertAnalyzer()
+
 if st.sidebar.button("▶ Run Full Backtest Engine"):
     with st.spinner("Fetching Market Data & Generating Synthetic News..."):
         start_date = (datetime.now() - timedelta(days=lookback)).strftime('%Y-%m-%d')
         end_date = datetime.now().strftime('%Y-%m-%d')
-        df_market, df_news = load_aligned_dataset(tickers, start_date, end_date)
+        df_market, df_news = fetch_data_cached(tickers, start_date, end_date)
     
     with st.spinner("Running FinBERT NLP Inference (This takes a moment)..."):
-        analyzer = FinBertAnalyzer()
+        analyzer = load_analyzer()
         df_news_scored = analyzer.process_dataframe(df_news)
 
     with st.spinner("Calculating Alpha Signals & Rolling Normalizations..."):
