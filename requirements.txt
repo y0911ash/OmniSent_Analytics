@@ -5,3 +5,4 @@ torch
 transformers
 matplotlib
 tqdm
+scipy
